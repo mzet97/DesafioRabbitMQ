@@ -2,6 +2,12 @@
 using Desafio.ProtocoloPublisher.Core.Models;
 using Desafio.ProtocoloPublisher.Core.Validates;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
@@ -10,6 +16,36 @@ public class Program
 {
     public static void Main(string[] args)
     {
+
+        using var host = Host.CreateDefaultBuilder(args)
+            .ConfigureLogging(logging =>
+            {
+                logging.AddOpenTelemetry(options =>
+                {
+                    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("ConsoleAppService"));
+                    options.AddOtlpExporter(otlpOptions =>
+                    {
+                        otlpOptions.Endpoint = new Uri("http://otel-collector:4317");
+                    });
+                });
+            })
+            .ConfigureServices((context, services) =>
+            {
+                services.AddOpenTelemetry()
+                     .WithTracing(builder =>
+                     {
+                         builder
+                             .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("ConsoleAppService"))
+                             .AddOtlpExporter(options =>
+                             {
+                                 options.Endpoint = new Uri("http://otel-collector:4317");
+                             });
+                     });
+            })
+            .Build();
+
+        var logger = host.Services.GetRequiredService<ILogger<Program>>();
+
 
         var configuration = new ConfigurationBuilder()
            .SetBasePath(AppContext.BaseDirectory)
@@ -30,6 +66,7 @@ public class Program
         if (!ValidateRabbitMQSettings.Validate(rabbitMQSettings))
         {
             Console.WriteLine("Configurações do RabbitMQ estão incompletas ou inválidas.");
+            logger.LogCritical("Configurações do RabbitMQ estão incompletas ou inválidas.");
             return;
         }
 
@@ -57,15 +94,21 @@ public class Program
 
                 channel.BasicPublish(exchange: "", routingKey: rabbitMQSettings.QueueName, basicProperties: null, body: body);
                 Console.WriteLine($"Protocolo {protocolo.NumeroProtocolo} enviado para a fila.");
+                logger.LogInformation($"Protocolo {protocolo.NumeroProtocolo} enviado para a fila.");
             }
 
             Console.WriteLine("Finalizado com sucesso");
+            logger.LogInformation("Finalizado com sucesso");
         }
         catch (Exception ex)
         {
             Console.WriteLine(rabbitMQSettings);
             Console.WriteLine($"Erro ao enviar protocolos: {ex.Message}");
             Console.WriteLine($"Erro ao enviar protocolos: {ex.InnerException?.Message}");
+
+            logger.LogError(ex, "Erro ao enviar protocolos: "+ rabbitMQSettings);
+            logger.LogError(ex.InnerException, "Erro ao enviar protocolos");
+            logger.LogCritical("Erro ao enviar protocolos");
         }
     }
 

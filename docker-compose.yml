@@ -30,21 +30,58 @@ services:
     networks:
       - app-network
   
-  # protocoloPublisher:
-  #   build:
-  #     context: ./src/Desafio.ProtocoloPublisher
-  #     dockerfile: Desafio.ProtocoloPublisher/Dockerfile
-  #   container_name: desafio-protocolo-publisher
-  #   image: desafio-protocolo-publisher  # Nome da imagem em minúsculas
-  #   environment:
-  #     - DOTNET_ENVIRONMENT=Development
-  #     - RABBITMQ_HOSTNAME=rabbitmq
-  #     - RABBITMQ_PORT=5672
-  #     - RABBITMQ_USERNAME=admin
-  #     - RABBITMQ_PASSWORD=admin
-  #     - RABBITMQ_QUEUE_NAME=protocolos
-  #   networks:
-  #     - app-network
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.4.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - app-network
+  
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.4.0
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    ports:
+      - "4320:4320"
+    networks:
+      - app-network
+    depends_on:
+      - elasticsearch
+      
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.4.0
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_SECURITY_ENABLED=false
+    networks:
+      - app-network
+      
+  otel-collector:
+    image: otel/opentelemetry-collector
+    container_name: otel-collector
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    command: ["--config", "/etc/otel-collector-config.yaml"]
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - app-network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - app-network
       
 networks:
   app-network:
