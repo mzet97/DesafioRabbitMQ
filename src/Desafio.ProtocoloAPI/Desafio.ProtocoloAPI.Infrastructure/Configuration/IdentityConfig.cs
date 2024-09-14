@@ -30,6 +30,8 @@ public static class IdentityConfig
             options.EnableSensitiveDataLogging(true);
         });
 
+        //Console.WriteLine("DefaultConnection: " + configuration.GetConnectionString("DefaultConnection"));
+
         services.AddDefaultIdentity<User>(options =>
         {
             options.Password.RequireDigit = true;

@@ -30,7 +30,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Definindo as vari�veis de ambiente
+# Definindo as variáveis de ambiente
 ENV ConnectionStrings__DefaultConnection="Host=postgres;Port=5432;Pooling=true;Database=dbProtocolos;User Id=admin;Password=admin;"
 ENV AppSettings__Secret="MXFhejJ3c3gzZWRjZHdkd3dxZnFlZ3JoanlrdWlsbw=="
 ENV AppSettings__ExpirationHours=24

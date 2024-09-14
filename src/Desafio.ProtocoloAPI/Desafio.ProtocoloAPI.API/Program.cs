@@ -6,68 +6,77 @@ using Desafio.ProtocoloAPI.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Configuration
-    .SetBasePath(builder.Environment.ContentRootPath)
-    .AddJsonFile("appsettings.json", true, true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
-    .AddEnvironmentVariables();
-
-builder.Services.AddMemoryCache();
-
-builder.Services.Configure<ApiBehaviorOptions>(options =>
+try
 {
-    options.SuppressModelStateInvalidFilter = true;
-});
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenTelemetryConfig();
-builder.Logging.AddOpenTelemetryConfig();
+    builder.Configuration
+        .SetBasePath(builder.Environment.ContentRootPath)
+        .AddJsonFile("appsettings.json", true, true)
+        .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
+        .AddEnvironmentVariables();
 
-builder.Services.AddIdentityConfig(builder.Configuration);
-builder.Services.AddCorsConfig();
-builder.Services.ResolveDependenciesInfrastructure();
-builder.Services.AddMessageBus(builder.Configuration);
-builder.Services.AddApplicationServices();
+    builder.Services.AddMemoryCache();
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerConfig();
-builder.Services.AddSwaggerGen();
+    builder.Services.Configure<ApiBehaviorOptions>(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true;
+    });
 
-var app = builder.Build();
+    builder.Services.AddOpenTelemetryConfig();
+    builder.Logging.AddOpenTelemetryConfig();
 
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<DataIdentityDbContext>();
-    dbContext.Database.Migrate();
+    builder.Services.AddIdentityConfig(builder.Configuration);
+    builder.Services.AddCorsConfig();
+    builder.Services.ResolveDependenciesInfrastructure();
+    builder.Services.AddMessageBus(builder.Configuration);
+    builder.Services.AddApplicationServices();
+
+    builder.Services.AddControllers();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerConfig();
+    builder.Services.AddSwaggerGen();
+
+    var app = builder.Build();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<DataIdentityDbContext>();
+        dbContext.Database.Migrate();
+    }
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseCors("Development");
+
+    }
+    else
+    {
+        app.UseCors("Production");
+        app.UseHsts();
+    }
+
+    app.UseMiddleware<ExceptionMiddleware>();
+    app.UseExceptionHandler(options => { });
+    app.UseRouting();
+
+    app.UseHttpsRedirection();
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.UseStaticFiles();
+    app.MapControllers();
+    app.UseSwaggerConfig();
+
+
+    app.Run();
 }
-
-app.UseSwagger();
-app.UseSwaggerUI();
-
-if (app.Environment.IsDevelopment())
+catch(Exception ex)
 {
-    app.UseCors("Development");
-
+    Console.WriteLine("Erro ao roda a aplicacao");
+    Console.WriteLine(ex.Message);
+    Console.WriteLine(ex.InnerException?.Message);
 }
-else
-{
-    app.UseCors("Production");
-    app.UseHsts();
-}
-
-app.UseMiddleware<ExceptionMiddleware>();
-app.UseExceptionHandler(options => { });
-app.UseRouting();
-
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseStaticFiles();
-app.MapControllers();
-app.UseSwaggerConfig();
-
-
-app.Run();

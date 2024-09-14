@@ -21,7 +21,8 @@ public static class MessageBusConfig
             throw new ArgumentNullException("RabbitMq configuration is missing");
         }
 
-        connectionFactory.HostName = rabbitMq.Host;
+        //Console.WriteLine($"RabbitMq configuration: HostName: {rabbitMq.HostName}, Port: {rabbitMq.Port},  UserName: {rabbitMq.Username}");
+        connectionFactory.HostName = rabbitMq.HostName;
         connectionFactory.Port = rabbitMq.Port;
         connectionFactory.UserName = rabbitMq.Username;
         connectionFactory.Password = rabbitMq.Password;
