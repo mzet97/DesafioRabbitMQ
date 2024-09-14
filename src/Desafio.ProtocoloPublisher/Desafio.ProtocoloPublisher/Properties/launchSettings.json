@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Desafio.ProtocoloPublisher": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

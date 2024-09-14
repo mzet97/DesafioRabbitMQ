@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./volumes/rabbitmq:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: dbProtocolos
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+  
+  # protocoloPublisher:
+  #   build:
+  #     context: ./src/Desafio.ProtocoloPublisher
+  #     dockerfile: Desafio.ProtocoloPublisher/Dockerfile
+  #   container_name: desafio-protocolo-publisher
+  #   image: desafio-protocolo-publisher  # Nome da imagem em minúsculas
+  #   environment:
+  #     - DOTNET_ENVIRONMENT=Development
+  #     - RABBITMQ_HOSTNAME=rabbitmq
+  #     - RABBITMQ_PORT=5672
+  #     - RABBITMQ_USERNAME=admin
+  #     - RABBITMQ_PASSWORD=admin
+  #     - RABBITMQ_QUEUE_NAME=protocolos
+  #   networks:
+  #     - app-network
+      
+networks:
+  app-network:
+    driver: bridge
