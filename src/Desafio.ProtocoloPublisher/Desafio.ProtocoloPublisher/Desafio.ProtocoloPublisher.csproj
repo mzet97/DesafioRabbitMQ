@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Desafio.ProtocoloPublisher.Core\Desafio.ProtocoloPublisher.Core.csproj" />
+    <ProjectReference Include="..\Desafio.ProtocoloPublisher.Infrastructure\Desafio.ProtocoloPublisher.Infrastructure.csproj" />
   </ItemGroup>
 
 <ItemGroup>

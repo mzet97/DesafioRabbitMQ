@@ -1,0 +1,73 @@
+using Desafio.ProtocoloAPI.API.Configuration;
+using Desafio.ProtocoloAPI.API.Extensions;
+using Desafio.ProtocoloAPI.Application.Configuration;
+using Desafio.ProtocoloAPI.Infrastructure.Configuration;
+using Desafio.ProtocoloAPI.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("appsettings.json", true, true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
+    .AddEnvironmentVariables();
+
+builder.Services.AddMemoryCache();
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
+builder.Services.AddOpenTelemetryConfig();
+builder.Logging.AddOpenTelemetryConfig();
+
+builder.Services.AddIdentityConfig(builder.Configuration);
+builder.Services.AddCorsConfig();
+builder.Services.ResolveDependenciesInfrastructure();
+builder.Services.AddMessageBus(builder.Configuration);
+builder.Services.AddApplicationServices();
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerConfig();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DataIdentityDbContext>();
+    dbContext.Database.Migrate();
+}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("Development");
+
+}
+else
+{
+    app.UseCors("Production");
+    app.UseHsts();
+}
+
+app.UseMiddleware<ExceptionMiddleware>();
+app.UseExceptionHandler(options => { });
+app.UseRouting();
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseStaticFiles();
+app.MapControllers();
+app.UseSwaggerConfig();
+
+
+app.Run();

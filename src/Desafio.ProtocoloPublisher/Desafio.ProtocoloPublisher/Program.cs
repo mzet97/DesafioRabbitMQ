@@ -1,6 +1,7 @@
 ﻿using Desafio.ProtocoloPublisher.Core.Fakes;
 using Desafio.ProtocoloPublisher.Core.Models;
 using Desafio.ProtocoloPublisher.Core.Validates;
+using Desafio.ProtocoloPublisher.Infrastructure.MessageBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,8 +10,6 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using RabbitMQ.Client;
-using System.Text;
-using System.Text.Json;
 
 public class Program
 {
@@ -74,7 +73,7 @@ public class Program
         {
             var protocolos = FakeProtocolo.GetRandom();
 
-            var factory = new ConnectionFactory
+            var connectionFactory = new ConnectionFactory
             {
                 HostName = rabbitMQSettings.HostName,
                 Port = rabbitMQSettings.Port,
@@ -82,17 +81,14 @@ public class Program
                 Password = rabbitMQSettings.Password
             };
 
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-
-            channel.QueueDeclare(queue: rabbitMQSettings.QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            var connection = connectionFactory.CreateConnection("protocolos");
+            var producerConnection = new ProducerConnection(connection);
+            var messageBus = new RabbitMqClient(producerConnection);
 
             foreach (var protocolo in protocolos)
             {
-                var json = JsonSerializer.Serialize(protocolo);
-                var body = Encoding.UTF8.GetBytes(json);
+                messageBus.Publish(protocolo, "protocolos", "protocolos");
 
-                channel.BasicPublish(exchange: "", routingKey: rabbitMQSettings.QueueName, basicProperties: null, body: body);
                 Console.WriteLine($"Protocolo {protocolo.NumeroProtocolo} enviado para a fila.");
                 logger.LogInformation($"Protocolo {protocolo.NumeroProtocolo} enviado para a fila.");
             }
@@ -106,11 +102,10 @@ public class Program
             Console.WriteLine($"Erro ao enviar protocolos: {ex.Message}");
             Console.WriteLine($"Erro ao enviar protocolos: {ex.InnerException?.Message}");
 
-            logger.LogError(ex, "Erro ao enviar protocolos: "+ rabbitMQSettings);
+            logger.LogError(ex, "Erro ao enviar protocolos: " + rabbitMQSettings);
             logger.LogError(ex.InnerException, "Erro ao enviar protocolos");
             logger.LogCritical("Erro ao enviar protocolos");
         }
     }
 
-    
 }

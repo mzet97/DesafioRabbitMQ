@@ -21,7 +21,7 @@ docker-compose up --build -d
 Na pasta src\Desafio.ProtocoloPublisher, execute os seguintes comandos:
 ```
 docker build -t matzet99/pub .
-docker run --rm --network desafiorabbitmq_app-network pmatzet99/pub
+docker run --rm --network desafiorabbitmq_app-network matzet99/pub
 ```
 
 ## 3) Executar a API

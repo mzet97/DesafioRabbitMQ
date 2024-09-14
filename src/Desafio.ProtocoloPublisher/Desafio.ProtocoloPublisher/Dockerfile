@@ -5,13 +5,13 @@ FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine AS base
 USER app
 WORKDIR /app
 
-
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Desafio.ProtocoloPublisher/Desafio.ProtocoloPublisher.csproj", "Desafio.ProtocoloPublisher/"]
 COPY ["Desafio.ProtocoloPublisher.Core/Desafio.ProtocoloPublisher.Core.csproj", "Desafio.ProtocoloPublisher.Core/"]
+COPY ["Desafio.ProtocoloPublisher.Infrastructure/Desafio.ProtocoloPublisher.Infrastructure.csproj", "Desafio.ProtocoloPublisher.Infrastructure/"]
 RUN dotnet restore "./Desafio.ProtocoloPublisher/Desafio.ProtocoloPublisher.csproj"
 COPY . .
 WORKDIR "/src/Desafio.ProtocoloPublisher"
