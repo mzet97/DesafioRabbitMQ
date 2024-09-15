@@ -95,4 +95,14 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+
+    public async Task RemoveAll()
+    {
+        var all = await GetAll();
+
+        foreach (var entity in all)
+        {
+            await Remove(entity.Id);
+        }
+    }
 }

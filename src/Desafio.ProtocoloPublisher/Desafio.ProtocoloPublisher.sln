@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.ProtocoloPublisher.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.ProtocoloPublisher.Core.Test", "Desafio.ProtocoloPublisher.Core.Test\Desafio.ProtocoloPublisher.Core.Test.csproj", "{91B72F56-F08D-4B1F-98FE-77BB66EF1995}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desafio.ProtocoloPublisher.Infrastructure", "Desafio.ProtocoloPublisher.Infrastructure\Desafio.ProtocoloPublisher.Infrastructure.csproj", "{9EA1E30C-7FBB-4FCB-BCEE-ABBBDDDDF412}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.ProtocoloPublisher.Infrastructure", "Desafio.ProtocoloPublisher.Infrastructure\Desafio.ProtocoloPublisher.Infrastructure.csproj", "{9EA1E30C-7FBB-4FCB-BCEE-ABBBDDDDF412}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{EE596E4C-7856-46F7-A057-17F2D2BF7B19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{91B72F56-F08D-4B1F-98FE-77BB66EF1995} = {EE596E4C-7856-46F7-A057-17F2D2BF7B19}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F6CB21A8-1A7E-4ABF-BC93-BBA97FA98532}

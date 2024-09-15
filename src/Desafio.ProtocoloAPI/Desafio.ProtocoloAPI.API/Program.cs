@@ -83,3 +83,5 @@ catch(Exception ex)
     Console.WriteLine(ex.Message);
     Console.WriteLine(ex.InnerException?.Message);
 }
+
+public partial class Program { }

@@ -37,21 +37,21 @@ public class ProtocoloSubscriber : BackgroundService
         return Task.CompletedTask;
     }
 
-    private async void OnMessageReceived(string message)
+    public async void OnMessageReceived(string message)
     {
         Console.WriteLine($"Received message: {message}");
         _logger.LogInformation("Received message: {message}", message);
 
         try
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var protocoloRepository = scope.ServiceProvider.GetRequiredService<IProtocoloRepository>();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
                 var protocolo = JsonSerializer.Deserialize<ProtocoloInput>(message, options);
 
                 bool isApproved =  await ProcessProtocolo(protocolo, protocoloRepository);
@@ -80,7 +80,7 @@ public class ProtocoloSubscriber : BackgroundService
         }
     }
 
-    private async Task<bool> ProcessProtocolo(ProtocoloInput? protocolo, IProtocoloRepository protocoloRepository)
+    public async Task<bool> ProcessProtocolo(ProtocoloInput? protocolo, IProtocoloRepository protocoloRepository)
     {
         if(protocolo is null)
         {

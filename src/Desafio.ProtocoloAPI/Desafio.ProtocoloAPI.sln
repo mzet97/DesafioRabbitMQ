@@ -3,17 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desafio.ProtocoloAPI.Core", "Desafio.ProtocoloAPI.Core\Desafio.ProtocoloAPI.Core.csproj", "{68E5D6A0-E4EA-4B66-BA78-B4104A3D2DA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.ProtocoloAPI.Core", "Desafio.ProtocoloAPI.Core\Desafio.ProtocoloAPI.Core.csproj", "{68E5D6A0-E4EA-4B66-BA78-B4104A3D2DA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desafio.ProtocoloAPI.Infrastructure", "Desafio.ProtocoloAPI.Infrastructure\Desafio.ProtocoloAPI.Infrastructure.csproj", "{53CFC3AF-CC56-40BC-8620-5EB494424F18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.ProtocoloAPI.Infrastructure", "Desafio.ProtocoloAPI.Infrastructure\Desafio.ProtocoloAPI.Infrastructure.csproj", "{53CFC3AF-CC56-40BC-8620-5EB494424F18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desafio.ProtocoloAPI.Application", "Desafio.ProtocoloAPI.Application\Desafio.ProtocoloAPI.Application.csproj", "{2DEC2752-57EC-4221-BD44-84E518706F80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.ProtocoloAPI.Application", "Desafio.ProtocoloAPI.Application\Desafio.ProtocoloAPI.Application.csproj", "{2DEC2752-57EC-4221-BD44-84E518706F80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desafio.ProtocoloAPI.UnitTest", "Desafio.ProtocoloAPI.UnitTest\Desafio.ProtocoloAPI.UnitTest.csproj", "{A1CD72A2-1BAD-47CA-95DE-EB8C948D7DA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.ProtocoloAPI.UnitTest", "Desafio.ProtocoloAPI.UnitTest\Desafio.ProtocoloAPI.UnitTest.csproj", "{A1CD72A2-1BAD-47CA-95DE-EB8C948D7DA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desafio.ProtocoloAPI.IntegrationTest", "Desafio.ProtocoloAPI.IntegrationTest\Desafio.ProtocoloAPI.IntegrationTest.csproj", "{0EFBFC6C-93CA-42B2-BF3C-823DA880451F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.ProtocoloAPI.IntegrationTest", "Desafio.ProtocoloAPI.IntegrationTest\Desafio.ProtocoloAPI.IntegrationTest.csproj", "{0EFBFC6C-93CA-42B2-BF3C-823DA880451F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desafio.ProtocoloAPI.API", "Desafio.ProtocoloAPI.API\Desafio.ProtocoloAPI.API.csproj", "{34D7DF97-2865-4F66-8EDC-6690ABC6B63C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.ProtocoloAPI.API", "Desafio.ProtocoloAPI.API\Desafio.ProtocoloAPI.API.csproj", "{34D7DF97-2865-4F66-8EDC-6690ABC6B63C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{518BA44B-CC24-45D9-90F9-1DBB250251C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +50,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A1CD72A2-1BAD-47CA-95DE-EB8C948D7DA1} = {518BA44B-CC24-45D9-90F9-1DBB250251C8}
+		{0EFBFC6C-93CA-42B2-BF3C-823DA880451F} = {518BA44B-CC24-45D9-90F9-1DBB250251C8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {69ED4A1C-477C-4BE5-A0E4-FAB044B1EA68}

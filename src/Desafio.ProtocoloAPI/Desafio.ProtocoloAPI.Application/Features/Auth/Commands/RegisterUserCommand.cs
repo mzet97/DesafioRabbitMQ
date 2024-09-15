@@ -15,9 +15,6 @@ public class RegisterUserCommand : IRequest<LoginResponseViewModel>
     [StringLength(255, ErrorMessage = "O campo  {0} deve está entre {2} e {1} caracteres", MinimumLength = 6)]
     public string Password { get; set; }
 
-    [Compare("Password", ErrorMessage = "A Senha não bate")]
-    public string ConfirmPassword { get; set; }
-
 
     public User ToDomain()
     {

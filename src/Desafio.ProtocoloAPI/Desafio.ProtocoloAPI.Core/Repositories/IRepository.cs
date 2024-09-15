@@ -17,6 +17,7 @@ public interface IRepository<TEntity> : IDisposable where TEntity : IEntityBase
     Task Update(TEntity entity);
 
     Task Remove(Guid id);
+    Task RemoveAll();
 
     Task<BaseResult<TEntity>> Search(
          Expression<Func<TEntity, bool>>? predicate = null,
