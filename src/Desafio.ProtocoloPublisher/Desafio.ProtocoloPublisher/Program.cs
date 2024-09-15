@@ -87,7 +87,7 @@ public class Program
 
             foreach (var protocolo in protocolos)
             {
-                messageBus.Publish(protocolo, "protocolos", "protocolos");
+                messageBus.Publish(protocolo, "protocolos.pending", "protocolos", "protocolos_pending_queue");
 
                 Console.WriteLine($"Protocolo {protocolo.NumeroProtocolo} enviado para a fila.");
                 logger.LogInformation($"Protocolo {protocolo.NumeroProtocolo} enviado para a fila.");

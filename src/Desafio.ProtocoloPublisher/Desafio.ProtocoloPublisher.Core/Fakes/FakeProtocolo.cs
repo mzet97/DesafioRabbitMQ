@@ -12,7 +12,7 @@ public static class FakeProtocolo
             .RuleFor(u => u.NumeroProtocolo, (f, u) => f.Random.Guid().ToString())
             .RuleFor(u => u.NumeroVia, (f, u) => f.Random.Int(1, 3))
             .RuleFor(u => u.Cpf, (f, u) => f.Person.Cpf())
-            .RuleFor(u => u.Rg, (f, u) => f.Random.ReplaceNumbers("##########"))
+            .RuleFor(u => u.Rg, (f, u) => f.Random.ReplaceNumbers("#########"))
             .RuleFor(u => u.Nome, (f, u) => f.Name.FullName())
             .RuleFor(u => u.NomeMae, (f, u) => f.Name.FullName())
             .RuleFor(u => u.NomePai, (f, u) => f.Name.FullName())
@@ -28,7 +28,7 @@ public static class FakeProtocolo
             .RuleFor(u => u.NumeroProtocolo, (f, u) => f.Random.Guid().ToString())
             .RuleFor(u => u.NumeroVia, (f, u) => f.Random.Int(1, 3))
             .RuleFor(u => u.Cpf, (f, u) => f.Person.Cpf())
-            .RuleFor(u => u.Rg, (f, u) => f.Random.ReplaceNumbers("##########"))
+            .RuleFor(u => u.Rg, (f, u) => f.Random.ReplaceNumbers("#########"))
             .RuleFor(u => u.Nome, (f, u) => f.Name.FullName())
             .RuleFor(u => u.NomeMae, (f, u) => f.Name.FullName())
             .RuleFor(u => u.NomePai, (f, u) => f.Name.FullName())
@@ -40,13 +40,22 @@ public static class FakeProtocolo
 
             if (i % 2 == 0)
             {
-                protocolo.Cpf = "12345678901";
+                protocolo.Cpf = "35465104023";
+                protocolo.NumeroVia = 1;
             }
+
             if (i % 3 == 0)
             {
-                protocolo.NumeroProtocolo = "DUPLICATE-PROTOCOLO";
+                protocolo.Rg = "123456789";
+                protocolo.NumeroVia = 1;
             }
+
             if (i % 4 == 0)
+            {
+                protocolo.NumeroProtocolo = "FBA7163B-8867-4069-8311-305E2E6CBB51";
+            }
+
+            if (i % 5 == 0)
             {
                 protocolo.Nome = "";
             }
@@ -65,4 +74,3 @@ public static class FakeProtocolo
         return invalid.Concat(valid);
     }
 }
-

@@ -1,6 +1,7 @@
 using Desafio.ProtocoloAPI.API.Configuration;
 using Desafio.ProtocoloAPI.API.Extensions;
 using Desafio.ProtocoloAPI.Application.Configuration;
+using Desafio.ProtocoloAPI.Application.Features.Protocolos.Subscribers;
 using Desafio.ProtocoloAPI.Infrastructure.Configuration;
 using Desafio.ProtocoloAPI.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,8 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerConfig();
     builder.Services.AddSwaggerGen();
+
+    builder.Services.AddHostedService<ProtocoloSubscriber>();
 
     var app = builder.Build();
 

@@ -15,9 +15,9 @@ public class RabbitMqClient : IMessageBusClient
         _connection = producerConnection.Connection;
     }
 
-    public void Publish(object message, string routingKey, string exchange)
+    public void Publish(object message, string routingKey, string exchange, string queueName)
     {
-        var channel = _connection.CreateModel();
+        using var channel = _connection.CreateModel();
 
         JsonSerializerOptions settings = new(JsonSerializerDefaults.Web)
         {
@@ -31,7 +31,14 @@ public class RabbitMqClient : IMessageBusClient
 
         channel.ExchangeDeclare(exchange, "topic", true);
 
-        channel.BasicPublish(exchange, routingKey, null, body);
+        channel.QueueDeclare(queueName, true, false, false, null);
+
+        channel.QueueBind(queueName, exchange, routingKey);
+
+        var properties = channel.CreateBasicProperties();
+        properties.Persistent = true;
+
+        channel.BasicPublish(exchange, routingKey, properties, body);
     }
 
     public void Subscribe(string queueName, string exchange, string routingKey, Action<string> onMessageReceived)

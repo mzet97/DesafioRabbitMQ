@@ -20,9 +20,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Protocolos\Commands\" />
-    <Folder Include="Features\Protocolos\Subscribers\" />
-    <Folder Include="Features\Protocolos\Queries\Handlers\" />
-    <Folder Include="Features\Protocolos\ViewModels\" />
     <Folder Include="Features\Protocolos\Notifications\" />
   </ItemGroup>
 

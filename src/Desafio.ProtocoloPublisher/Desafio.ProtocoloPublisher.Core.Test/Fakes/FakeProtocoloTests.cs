@@ -40,8 +40,9 @@ public class FakeProtocoloTests
 
         // Assert
         Assert.Equal(quantity, protocolos.Count());
-        Assert.Contains(protocolos, p => p.Cpf == "12345678901");
-        Assert.Contains(protocolos, p => p.NumeroProtocolo == "DUPLICATE-PROTOCOLO");
+        Assert.Contains(protocolos, p => p.Cpf == "35465104023" && p.NumeroVia == 1);
+        Assert.Contains(protocolos, p => p.Rg == "123456789" && p.NumeroVia == 1);
+        Assert.Contains(protocolos, p => p.NumeroProtocolo == "FBA7163B-8867-4069-8311-305E2E6CBB51");
         Assert.Contains(protocolos, p => string.IsNullOrWhiteSpace(p.Nome));
     }
 
@@ -56,10 +57,17 @@ public class FakeProtocoloTests
 
         // Assert
         Assert.Equal(10, protocolos.Count());
-        int validCount = protocolos.Count(p => !string.IsNullOrWhiteSpace(p.Nome) && p.NumeroProtocolo != "DUPLICATE-PROTOCOLO" && p.Cpf != "12345678901");
+
+        int validCount = protocolos.Count(p =>
+            !string.IsNullOrWhiteSpace(p.Nome) &&
+            p.NumeroProtocolo != "FBA7163B-8867-4069-8311-305E2E6CBB51" &&
+            p.Cpf != "35465104023" &&
+            p.Rg != "123456789");
+
         int invalidCount = protocolos.Count() - validCount;
 
         Assert.Equal(6, validCount);
         Assert.Equal(4, invalidCount);
     }
 }
+

@@ -27,7 +27,7 @@ public static class MessageBusConfig
         connectionFactory.UserName = rabbitMq.Username;
         connectionFactory.Password = rabbitMq.Password;
 
-        var connection = connectionFactory.CreateConnection("protocolos");
+        var connection = connectionFactory.CreateConnection("protocolos-subscriber");
 
         services.AddSingleton(new ProducerConnection(connection));
         services.AddSingleton<IMessageBusClient, RabbitMqClient>();
