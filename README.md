@@ -1,107 +1,160 @@
-
 # Desafio RabbitMQ
 
 ## Tecnologias Utilizadas na Demonstração
-* RabbitMQ
-* PostgreSQL
-* OpenTelemetry
-* Elasticsearch
-* Kibana
-* .NET 8
-* xUnit
 
-# Como Executar o Projeto
+- RabbitMQ
+- PostgreSQL
+- OpenTelemetry
+- Elasticsearch
+- Kibana
+- .NET 8
+- xUnit
 
-## 1) Iniciar o Banco de Dados e o RabbitMQ
-Na pasta raiz do projeto, execute o seguinte comando:
-```
-docker-compose up --build -d
+## Instruções para Execução do Projeto
+
+### 1. Configuração do Docker Swarm
+
+#### 1.1 Inicialização do Docker Swarm
+
+Para iniciar o Docker Swarm, execute o comando:
+
+```bash
+docker swarm init
 ```
 
-## 2) Executar a API no Docker
-Na pasta `src\Desafio.ProtocoloAPI`, execute os seguintes comandos:
+O Docker Swarm é uma ferramenta poderosa que permite a orquestração de contêineres em múltiplos nós, facilitando o gerenciamento e a alta disponibilidade dos serviços. Ao inicializar o Swarm, seu host será configurado como um nó gerenciador, possibilitando a criação de clusters robustos para lidar com diversas cargas de trabalho.
+
+#### 1.2 Criação da Rede para Contêineres
+
+Crie a rede necessária para a comunicação dos contêineres:
+
+```bash
+docker network create --driver overlay --attachable desafiorabbitmq_app-network
 ```
+
+A criação de uma rede overlay permite que os contêineres se comuniquem de maneira eficiente, mesmo que estejam distribuídos em diferentes nós do cluster. A opção `--attachable` possibilita a conexão direta de contêineres fora do contexto de serviços gerenciados, garantindo flexibilidade na comunicação entre componentes distribuídos.
+
+#### 1.3 Execução do Docker Compose
+
+Nesta etapa, o Docker Compose será executado via Swarm para instanciar os contêineres necessários para a demonstração. Na pasta raiz do projeto, execute o seguinte comando:
+
+```bash
+docker stack deploy -c docker-compose.yml desafio_stack
+```
+
+O comando acima implanta todos os serviços definidos no arquivo `docker-compose.yml` como um stack do Swarm, garantindo alta disponibilidade e fácil gerenciamento. Cada contêiner é instanciado como uma tarefa dentro do stack, facilitando a escalabilidade e o monitoramento dos componentes.
+
+### 2. Executar a API no Docker Swarm
+
+Na pasta `src/Desafio.ProtocoloAPI`, execute os seguintes comandos:
+
+```bash
 docker build -t matzet99/api .
-docker run --rm -p 8080:8080 --network desafiorabbitmq_app-network matzet99/api
+docker service create --replicas 3 --name desafioMQ -p 8080:8080 --network desafiorabbitmq_app-network matzet99/api
 ```
 
-#### Acesse a URL do Swagger disponível em:
+Este processo cria a imagem da API e, em seguida, cria um serviço com 3 réplicas. As réplicas garantem maior resiliência, permitindo que o sistema continue funcionando mesmo que uma instância falhe. O uso da rede overlay assegura que todas as réplicas possam se comunicar de forma eficaz com os demais serviços.
 
-[http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html)
+#### Acessar a Interface do Swagger
 
-#### Para registrar-se na aplicação:
+A interface Swagger está disponível em: [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html) O Swagger fornece uma interface gráfica para interação com os endpoints da API, permitindo o teste de funcionalidades e a validação dos recursos disponíveis. Esta interface é essencial para garantir que os desenvolvedores possam explorar e compreender o comportamento da API de maneira intuitiva.
 
-Faça uma requisição POST para: 
+#### Registro na Aplicação
+
+Faça uma requisição POST para o seguinte endpoint:
+
 ```
 http://localhost:8080/api/Auth/register
 ```
+
 Com o corpo da requisição:
-```
+
+```json
 {
   "email": "user@example.com",
   "password": "string"
 }
 ```
 
-#### Para fazer login e gerar o token:
+Este endpoint permite o registro de novos usuários na aplicação. O processo de registro é uma etapa fundamental para garantir o acesso seguro aos recursos disponibilizados pela API, utilizando um sistema de autenticação robusto.
 
-Faça uma requisição POST para: 
+#### Login e Geração de Token
+
+Faça uma requisição POST para o seguinte endpoint:
+
 ```
 http://localhost:8080/api/Auth/login
 ```
+
 Com o corpo da requisição:
-```
+
+```json
 {
   "email": "user@example.com",
   "password": "string"
 }
 ```
 
-#### Consumidor
-O consumidor está em execução como um serviço em segundo plano da aplicação. Esse serviço fica escutando a __Fila:__ `protocolos_pending_queue`. Se os dados forem válidos, serão salvos no banco de dados e enviados para a __Fila:__ `protocolos_finish_queue`. Após o salvamento, eles serão encaminhados com a __Routing Key:__ `protocolos.approved`. Caso contrário, serão enviados com a __Routing Key:__ `protocolos.refused`.
+Após o registro, o usuário deve realizar o login para obter um token de acesso. Este token será utilizado para autenticar as requisições subsequentes, garantindo que apenas usuários autorizados possam acessar os recursos protegidos da API.
 
-## 3) Executar o Projeto do Publicador no Docker
-Na pasta `src\Desafio.ProtocoloPublisher`, execute os seguintes comandos:
-```
+#### Consumidor de Mensagens
+
+O consumidor de mensagens está em execução como um serviço em segundo plano da aplicação. Esse serviço monitora a **fila** `protocolos_pending_queue`. Caso os dados sejam válidos, eles serão salvos no banco de dados e enviados para a **fila** `protocolos_finish_queue`. Após o salvamento, os dados serão encaminhados com a **Routing Key** `protocolos.approved`. Caso sejam inválidos, serão enviados com a **Routing Key** `protocolos.refused`. O consumidor implementa um padrão de mensageria que permite o processamento assíncrono de dados, aumentando a eficiência e a escalabilidade do sistema. A validação e roteamento dos dados permitem que ações apropriadas sejam tomadas, como persistência no banco de dados ou reenvio com uma chave de roteamento específica.
+
+### 3. Executar o Publicador no Docker
+
+Na pasta `src/Desafio.ProtocoloPublisher`, execute os seguintes comandos:
+
+```bash
 docker build -t matzet99/pub .
 docker run --rm --network desafiorabbitmq_app-network matzet99/pub
 ```
 
-#### Informações Necessárias
-Ao executar o `ProtocoloPublisher`, ele enviará dados simulados para o RabbitMQ.
+O publicador é responsável por enviar mensagens para a fila `protocolos_pending_queue`, simulando a geração de novos protocolos. A execução deste componente permite testar a interação entre o produtor e o consumidor de mensagens, validando o fluxo completo de processamento.
 
-- __Exchange:__ `protocolos`
-- __Fila:__ `protocolos_pending_queue`
-- __Routing Key:__ `protocolos.pending`
+#### Informações sobre o Publicador
 
-## 4) Executar os Testes Unitários
-Para rodar os testes unitários, siga os passos abaixo:
+Ao executar o `ProtocoloPublisher`, dados simulados serão enviados ao RabbitMQ.
+
+- **Exchange**: `protocolos`
+- **Fila**: `protocolos_pending_queue`
+- **Routing Key**: `protocolos.pending`
+
+A exchange `protocolos` é utilizada para distribuir mensagens para as filas corretas, com base na chave de roteamento `protocolos.pending`. Essa arquitetura garante flexibilidade e escalabilidade no processamento dos dados, permitindo adicionar novas filas e regras de roteamento conforme necessário.
+
+### 4. Execução dos Testes Unitários
+
+Para rodar os testes unitários, siga as instruções abaixo:
+
 1. Certifique-se de que o .NET SDK 8 está instalado em sua máquina.
-2. Navegue até a pasta dos testes unitários do projeto Desafio.ProtocoloAPI:
-```
-cd src\Desafio.ProtocoloAPI
-```
+2. Navegue até a pasta dos testes unitários do projeto `Desafio.ProtocoloAPI`:
+   ```bash
+   cd src/Desafio.ProtocoloAPI
+   ```
 3. Execute o comando para rodar os testes:
-```
-dotnet test
-```
-4. Navegue até a pasta dos testes unitários do projeto Desafio.ProtocoloPublisher:
-```
-cd src\Desafio.ProtocoloPublisher
-```
+   ```bash
+   dotnet test
+   ```
+4. Navegue até a pasta dos testes unitários do projeto `Desafio.ProtocoloPublisher`:
+   ```bash
+   cd src/Desafio.ProtocoloPublisher
+   ```
 5. Execute o comando para rodar os testes:
-```
-dotnet test
-```
+   ```bash
+   dotnet test
+   ```
 
-## 5) Como ver os logs no Kibana
-### 1. Acessar a Interface do Kibana
-Após iniciar os serviços com docker-compose, você pode acessar o Kibana em:
+Os testes unitários são essenciais para validar o comportamento correto dos componentes individuais do sistema. Eles garantem que cada módulo funcione conforme o esperado, isolando erros e permitindo uma manutenção mais confiável do código. A execução periódica dos testes promove uma abordagem de desenvolvimento orientada à qualidade.
 
-[http://localhost:5601](http://localhost:5601)
+### 5. Visualizar Logs no Kibana
 
-### 2. Configurar um Padrão de Índice no Kibana
-Uma vez na interface do Kibana, siga estas etapas:
+#### 5.1 Acesso à Interface do Kibana
+
+Após iniciar os serviços com Docker Compose, acesse o Kibana em: [http://localhost:5601](http://localhost:5601) O Kibana é uma ferramenta poderosa para visualização de logs e análise de dados. Ele permite monitorar em tempo real as atividades da aplicação, facilitando a identificação de problemas e a análise de desempenho.
+
+#### 5.2 Configuração de um Padrão de Índice no Kibana
+
+Na interface do Kibana, siga estas etapas:
 
 - Acesse a seção "Stack Management":
   - No menu do lado esquerdo, clique em "Stack Management".
@@ -112,11 +165,19 @@ Uma vez na interface do Kibana, siga estas etapas:
 - Selecionar Campo de Data:
   - Na lista de campos, selecione o campo de data apropriado (geralmente `@timestamp`) e clique em "Create index pattern".
 
-### 3. Explorar os Logs
+O padrão de índice permite ao Kibana buscar e organizar os dados do Elasticsearch de forma estruturada, facilitando a navegação e a análise dos registros. Configurar um índice adequado é essencial para garantir a visibilidade dos eventos mais relevantes do sistema.
+
+#### 5.3 Explorar os Logs
+
 - No menu à esquerda, clique em "Discover".
 - Selecione o padrão de índice que você criou (`otel-logs-*`).
-- Você deve ver os logs enviados para o Elasticsearch e indexados pelo Logstash.
+- Você deve visualizar os logs enviados para o Elasticsearch e indexados pelo Logstash.
 
-### 4. Visualizar e Criar Dashboards
-- **Visualizar Logs:** Na seção "Discover", você pode aplicar filtros, mudar o intervalo de tempo e explorar os dados brutos que foram coletados.
-- **Criar Visualizações:** No menu "Visualize Library" e "Dashboard", você pode criar gráficos e painéis com base nos logs e métricas que estão no Elasticsearch.
+A seção "Discover" do Kibana permite explorar os logs de forma detalhada, aplicando filtros e analisando registros específicos. Isso possibilita uma visão precisa das operações do sistema e facilita a detecção de possíveis problemas.
+
+#### 5.4 Visualizar e Criar Dashboards
+
+- **Exploração de Logs**: Na seção "Discover", aplique filtros, altere o intervalo de tempo e explore os dados brutos coletados.
+- **Criação de Visualizações**: No menu "Visualize Library" e "Dashboard", crie gráficos e painéis com base nos logs e métricas que estão no Elasticsearch.
+
+A criação de dashboards permite visualizar métricas e dados de maneira mais intuitiva, utilizando gráficos e diagramas que facilitam a interpretação dos resultados. Dashboards bem projetados são fundamentais para uma gestão eficiente e uma resposta rápida a incidentes, oferecendo insights críticos sobre o funcionamento e a performance da aplicação.

@@ -1,0 +1,1 @@
+hey -n 10000 -c 1000 http://localhost:8080/api/Protocolo/teste

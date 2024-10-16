@@ -5,7 +5,9 @@ using Desafio.ProtocoloAPI.Application.Features.Protocolos.Subscribers;
 using Desafio.ProtocoloAPI.Infrastructure.Configuration;
 using Desafio.ProtocoloAPI.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 try
 {
@@ -17,11 +19,39 @@ try
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
         .AddEnvironmentVariables();
 
-    builder.Services.AddMemoryCache();
-
     builder.Services.Configure<ApiBehaviorOptions>(options =>
     {
         options.SuppressModelStateInvalidFilter = true;
+    });
+
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = "localhost:6379";
+        options.InstanceName = "RedisCacheInstance";
+    });
+
+    builder.Services.AddOutputCache(options =>
+    {
+        options.AddBasePolicy(builder =>
+            builder.Expire(TimeSpan.FromSeconds(10)));
+    });
+
+    builder.Services.Configure<KestrelServerOptions>(options =>
+    {
+        options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(2);
+        options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
+    });
+
+    builder.Services.Configure<KestrelServerOptions>(options =>
+    {
+        options.Limits.MaxConcurrentConnections = 100000;  // Aumentar para suportar mais conexões simultâneas
+        options.Limits.MaxConcurrentUpgradedConnections = 100000; // Útil se estiver usando WebSockets
+    });
+
+    builder.WebHost.ConfigureKestrel(serverOptions =>
+    {
+        serverOptions.Limits.MaxRequestBufferSize = 1073741824; // 1 GB
+        serverOptions.Limits.MaxResponseBufferSize = 1073741824; // 1 GB
     });
 
     builder.Services.AddOpenTelemetryConfig();
@@ -48,6 +78,7 @@ try
         dbContext.Database.Migrate();
     }
 
+    app.UseOutputCache();
     app.UseSwagger();
     app.UseSwaggerUI();
 
