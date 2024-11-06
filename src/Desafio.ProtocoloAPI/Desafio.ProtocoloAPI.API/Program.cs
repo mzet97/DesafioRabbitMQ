@@ -5,9 +5,7 @@ using Desafio.ProtocoloAPI.Application.Features.Protocolos.Subscribers;
 using Desafio.ProtocoloAPI.Infrastructure.Configuration;
 using Desafio.ProtocoloAPI.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 try
 {
@@ -30,32 +28,34 @@ try
         options.InstanceName = "RedisCacheInstance";
     });
 
+    ThreadPool.SetMinThreads(1000, 1000);
+
+
     builder.Services.AddOutputCache(options =>
     {
         options.AddBasePolicy(builder =>
-            builder.Expire(TimeSpan.FromSeconds(10)));
-    });
-
-    builder.Services.Configure<KestrelServerOptions>(options =>
-    {
-        options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(2);
-        options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
-    });
-
-    builder.Services.Configure<KestrelServerOptions>(options =>
-    {
-        options.Limits.MaxConcurrentConnections = 100000;  // Aumentar para suportar mais conexões simultâneas
-        options.Limits.MaxConcurrentUpgradedConnections = 100000; // Útil se estiver usando WebSockets
+            builder.Expire(TimeSpan.FromSeconds(500)));
     });
 
     builder.WebHost.ConfigureKestrel(serverOptions =>
     {
-        serverOptions.Limits.MaxRequestBufferSize = 1073741824; // 1 GB
-        serverOptions.Limits.MaxResponseBufferSize = 1073741824; // 1 GB
+        serverOptions.Limits.MaxConcurrentConnections = 100000;
+        serverOptions.Limits.MaxConcurrentUpgradedConnections = 100000;
+        serverOptions.Limits.Http2.MaxStreamsPerConnection = 1000;
+        serverOptions.Limits.MaxRequestBodySize = 1048576; // Limitar tamanho do corpo da requisição se possível.
+        serverOptions.Limits.KeepAliveTimeout = TimeSpan.FromSeconds(5);
+        serverOptions.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(2);
     });
 
-    builder.Services.AddOpenTelemetryConfig();
-    builder.Logging.AddOpenTelemetryConfig();
+
+    builder.WebHost.UseSockets(socketOptions =>
+    {
+        socketOptions.NoDelay = true;
+    });
+
+
+    //builder.Services.AddOpenTelemetryConfig();
+    //builder.Logging.AddOpenTelemetryConfig();
 
     builder.Services.AddIdentityConfig(builder.Configuration);
     builder.Services.AddCorsConfig();
@@ -97,9 +97,9 @@ try
     app.UseExceptionHandler(options => { });
     app.UseRouting();
 
-    app.UseHttpsRedirection();
-    app.UseAuthentication();
-    app.UseAuthorization();
+    //app.UseHttpsRedirection();
+    //app.UseAuthentication();
+    //app.UseAuthorization();
 
     app.UseStaticFiles();
     app.MapControllers();
@@ -108,7 +108,7 @@ try
 
     app.Run();
 }
-catch(Exception ex)
+catch (Exception ex)
 {
     Console.WriteLine("Erro ao roda a aplicacao");
     Console.WriteLine(ex.Message);

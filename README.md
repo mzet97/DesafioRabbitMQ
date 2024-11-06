@@ -53,6 +53,11 @@ docker build -t matzet99/api .
 docker service create --replicas 3 --name desafioMQ -p 8080:8080 --network desafiorabbitmq_app-network matzet99/api
 ```
 
+```bash
+docker service create --name desafioMQ --replicas 32 --limit-cpu 1 --limit-memory 2G --reserve-cpu 0.5 --reserve-memory 1G --restart-condition any --restart-max-attempts 3 --placement-pref 'spread=node.id' --network desafiorabbitmq_app-network -p 8080:8080 matzet99/api
+
+```
+
 Este processo cria a imagem da API e, em seguida, cria um serviço com 3 réplicas. As réplicas garantem maior resiliência, permitindo que o sistema continue funcionando mesmo que uma instância falhe. O uso da rede overlay assegura que todas as réplicas possam se comunicar de forma eficaz com os demais serviços.
 
 #### Acessar a Interface do Swagger

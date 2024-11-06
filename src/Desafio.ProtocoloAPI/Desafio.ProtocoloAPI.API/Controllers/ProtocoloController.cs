@@ -20,7 +20,7 @@ public class ProtocoloController : MainController
     }
 
     [HttpGet]
-    [OutputCache(Duration = 30)]
+    [OutputCache(Duration = 500)]
     public async Task<IActionResult> Get([FromQuery] SearchProtocoloQuery query)
     {
         var result = await _mediator.Send(query);
@@ -32,7 +32,7 @@ public class ProtocoloController : MainController
     }
 
     [HttpGet("teste")]
-    [OutputCache(Duration = 30)]
+    [OutputCache(Duration = 500)]
     public async Task<IActionResult> GetTeste([FromQuery] SearchProtocoloQuery query)
     {
         return Ok("OK");
