@@ -53,8 +53,10 @@ docker build -t matzet99/api .
 docker service create --replicas 3 --name desafioMQ -p 8080:8080 --network desafiorabbitmq_app-network matzet99/api
 ```
 
+Pool de 50 maquinas
 ```bash
-docker service create --name desafioMQ --replicas 32 --limit-cpu 1 --limit-memory 2G --reserve-cpu 0.5 --reserve-memory 1G --restart-condition any --restart-max-attempts 3 --placement-pref 'spread=node.id' --network desafiorabbitmq_app-network -p 8080:8080 matzet99/api
+docker service create --name desafioMQ --replicas 50 --limit-cpu 0.5 --limit-memory 200M --reserve-cpu 0.1 --reserve-memory 150M --restart-condition any --restart-max-attempts 3 --placement-pref 'spread=node.id' --network desafiorabbitmq_app-network -p 8080:8080 matzet99/api
+
 
 ```
 

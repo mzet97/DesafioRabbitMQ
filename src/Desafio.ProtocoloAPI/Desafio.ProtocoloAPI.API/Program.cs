@@ -54,8 +54,8 @@ try
     });
 
 
-    //builder.Services.AddOpenTelemetryConfig();
-    //builder.Logging.AddOpenTelemetryConfig();
+    builder.Services.AddOpenTelemetryConfig();
+    builder.Logging.AddOpenTelemetryConfig();
 
     builder.Services.AddIdentityConfig(builder.Configuration);
     builder.Services.AddCorsConfig();

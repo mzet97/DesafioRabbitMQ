@@ -4,11 +4,11 @@ import { Rate } from 'k6/metrics';
 
 export let options = {
     stages: [
-        { duration: '30s', target: 1000 },     // Aumentar para 1.000 VUs em 30s
-        { duration: '1m', target: 5000 },      // Aumentar para 5.000 VUs em 1 minuto
-        { duration: '2m', target: 10000 },     // Aumentar para 10.000 VUs em 2 minutos
-        { duration: '2m', target: 10000 },     // Manter 10.000 VUs por 2 minutos
-        { duration: '1m', target: 0 },         // Reduzir para 0 VUs em 1 minuto
+        { duration: '20s', target: 5000 },     // Aumentar para 1.000 VUs em 30s
+        { duration: '20s', target: 5000 },      // Aumentar para 5.000 VUs em 1 minuto
+        { duration: '20s', target: 10000 },     // Aumentar para 10.000 VUs em 2 minutos
+        { duration: '20s', target: 10000 },     // Manter 10.000 VUs por 2 minutos
+        { duration: '10s', target: 0 },         // Reduzir para 0 VUs em 1 minuto
     ],
     thresholds: {
         'http_req_duration': ['p(95)<500'],    // 95% das requisições com duração < 500ms
@@ -19,7 +19,7 @@ export let options = {
 export let errorRate = new Rate('errors');
 
 export default function () {
-    let url = 'http://localhost:8080/api/Protocolo/teste';
+    let url = 'http://localhost:8080/api/Protocolo';
 
     let params = {
         headers: {

@@ -31,7 +31,7 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 # Definindo as vari�veis de ambiente
-ENV ConnectionStrings__DefaultConnection="Host=postgres;Port=5432;Pooling=true;Database=dbProtocolos;User Id=admin;Password=admin;"
+ENV ConnectionStrings__DefaultConnection="Host=postgres;Port=5432;Pooling=true;Database=dbProtocolos;User Id=admin;Password=admin;Pooling=true;Minimum Pool Size=5;Maximum Pool Size=100;Timeout=15;Connection Idle Lifetime=300;"
 ENV AppSettings__Secret="MXFhejJ3c3gzZWRjZHdkd3dxZnFlZ3JoanlrdWlsbw=="
 ENV AppSettings__ExpirationHours=24
 ENV AppSettings__Issuer="Desafio"

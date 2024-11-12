@@ -14,4 +14,11 @@ public class SearchProtocoloQuery : BaseSearch, IRequest<BaseResult<ProtocolView
     public string Nome { get; set; } = string.Empty;
     public string NomeMae { get; set; } = string.Empty;
     public string NomePai { get; set; } = string.Empty;
+
+    public override string ToString()
+    {
+        return $"{base.ToString()}, " +
+               $"SearchProtocoloQuery: NumeroProtocolo={NumeroProtocolo}, NumeroVia={NumeroVia}, Cpf={Cpf}, Rg={Rg}, " +
+               $"Nome={Nome}, NomeMae={NomeMae}, NomePai={NomePai}";
+    }
 }
