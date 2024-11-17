@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: desafiomq
+  labels:
+    app: desafiomq
+spec:
+  replicas: 10  # Número inicial de réplicas (você pode começar com um valor menor)
+  selector:
+    matchLabels:
+      app: desafiomq
+  template:
+    metadata:
+      labels:
+        app: desafiomq
+    spec:
+      containers:
+      - name: api
+        image: matzet99/api:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: "500m"  # Limite de CPU (0.5 vCPU)
+            memory: "150Mi"  # Limite de Memória
+          requests:
+            cpu: "100m"  # CPU reservado (0.1 vCPU)
+            memory: "100Mi"  # Memória reservada
+        imagePullPolicy: Always
+      restartPolicy: Always  # Política de reinício
+

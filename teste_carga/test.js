@@ -19,7 +19,7 @@ export let options = {
 export let errorRate = new Rate('errors');
 
 export default function () {
-    let url = 'http://localhost:8080/api/Protocolo';
+    let url = 'http://localhost:8080/api/Protocolo/teste';
 
     let params = {
         headers: {

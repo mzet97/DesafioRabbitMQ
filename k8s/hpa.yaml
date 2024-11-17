@@ -1,0 +1,12 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: desafiomq-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: desafiomq
+  minReplicas: 10
+  maxReplicas: 50
+  targetCPUUtilizationPercentage: 50  # Se a CPU estiver acima de 50%, irá escalar automaticamente

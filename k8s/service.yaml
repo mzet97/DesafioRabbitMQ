@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: desafiomq-service
+  labels:
+    app: desafiomq
+spec:
+  selector:
+    app: desafiomq
+  ports:
+    - protocol: TCP
+      port: 8080        # Porta que o serviço expõe
+      targetPort: 8080  # Porta no container
+      nodePort: 30080   # Porta do nó para acesso externo (entre 30000-32767)
+  type: NodePort

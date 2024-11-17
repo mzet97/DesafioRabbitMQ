@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-same-namespace
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: desafiomq  # Aplica esta política aos pods com o label "app: desafiomq"
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector: {}  # Permite o tráfego de todos os pods dentro do mesmo namespace
