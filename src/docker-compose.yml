@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: ./src/Desafio.ProtocoloAPI
+      dockerfile: Desafio.ProtocoloAPI.API/Dockerfile
+      args:
+        BUILD_CONFIGURATION: Release
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Pooling=true;Database=dbProtocolos;User Id=admin;Password=admin;Pooling=true;Minimum Pool Size=5;Maximum Pool Size=100;Timeout=15;Connection Idle Lifetime=300;"
+      AppSettings__Secret: "MXFhejJ3c3gzZWRjZHdkd3dxZnFlZ3JoanlrdWlsbw=="
+      AppSettings__ExpirationHours: "24"
+      AppSettings__Issuer: "Desafio"
+      AppSettings__ValidOn: "https://localhost:8080"
+      RabbitMQ__HostName: "rabbitmq"
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UserName: "admin"
+      RabbitMQ__Password: "admin"
+    networks:
+      - desafiorabbitmq_app-network
+
+networks:
+  desafiorabbitmq_app-network:
+    external: true  # Define que a rede já existe e o Compose deve usá-la

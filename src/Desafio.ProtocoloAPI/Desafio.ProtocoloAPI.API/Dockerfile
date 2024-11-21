@@ -11,13 +11,13 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Desafio.ProtocoloAPI.API/Desafio.ProtocoloAPI.API.csproj", "Desafio.ProtocoloAPI.API/"]
-COPY ["Desafio.ProtocoloAPI.Application/Desafio.ProtocoloAPI.Application.csproj", "Desafio.ProtocoloAPI.Application/"]
-COPY ["Desafio.ProtocoloAPI.Core/Desafio.ProtocoloAPI.Core.csproj", "Desafio.ProtocoloAPI.Core/"]
-COPY ["Desafio.ProtocoloAPI.Infrastructure/Desafio.ProtocoloAPI.Infrastructure.csproj", "Desafio.ProtocoloAPI.Infrastructure/"]
+COPY ["Desafio.ProtocoloAPI/Desafio.ProtocoloAPI.API/Desafio.ProtocoloAPI.API.csproj", "Desafio.ProtocoloAPI.API/"]
+COPY ["Desafio.ProtocoloAPI/Desafio.ProtocoloAPI.Application/Desafio.ProtocoloAPI.Application.csproj", "Desafio.ProtocoloAPI.Application/"]
+COPY ["Desafio.ProtocoloAPI/Desafio.ProtocoloAPI.Core/Desafio.ProtocoloAPI.Core.csproj", "Desafio.ProtocoloAPI.Core/"]
+COPY ["Desafio.ProtocoloAPI/Desafio.ProtocoloAPI.Infrastructure/Desafio.ProtocoloAPI.Infrastructure.csproj", "Desafio.ProtocoloAPI.Infrastructure/"]
 RUN dotnet restore "./Desafio.ProtocoloAPI.API/Desafio.ProtocoloAPI.API.csproj"
 COPY . .
-WORKDIR "/src/Desafio.ProtocoloAPI.API"
+WORKDIR "/src/Desafio.ProtocoloAPI/Desafio.ProtocoloAPI.API"
 RUN dotnet build "./Desafio.ProtocoloAPI.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
@@ -30,7 +30,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Definindo as vari�veis de ambiente
+# Definindo as variáveis de ambiente
 ENV ConnectionStrings__DefaultConnection="Host=postgres;Port=5432;Pooling=true;Database=dbProtocolos;User Id=admin;Password=admin;Pooling=true;Minimum Pool Size=5;Maximum Pool Size=100;Timeout=15;Connection Idle Lifetime=300;"
 ENV AppSettings__Secret="MXFhejJ3c3gzZWRjZHdkd3dxZnFlZ3JoanlrdWlsbw=="
 ENV AppSettings__ExpirationHours=24

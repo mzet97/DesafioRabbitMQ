@@ -46,18 +46,21 @@ O comando acima implanta todos os serviços definidos no arquivo `docker-compose
 
 ### 2. Executar a API no Docker Swarm
 
-Na pasta `src/Desafio.ProtocoloAPI`, execute os seguintes comandos:
+Na pasta `DesafioRabbitMQ\src`, execute os seguintes comandos:
 
 ```bash
-docker build -t matzet99/api .
+docker build -t matzet99/api -f Desafio.ProtocoloAPI/Desafio.ProtocoloAPI.API/Dockerfile .
 docker service create --replicas 3 --name desafioMQ -p 8080:8080 --network desafiorabbitmq_app-network matzet99/api
 ```
 
 Pool de 50 maquinas
 ```bash
 docker service create --name desafioMQ --replicas 50 --limit-cpu 0.5 --limit-memory 200M --reserve-cpu 0.1 --reserve-memory 150M --restart-condition any --restart-max-attempts 3 --placement-pref 'spread=node.id' --network desafiorabbitmq_app-network -p 8080:8080 matzet99/api
+```
+ou para rodar via docker compose:
 
-
+```bash
+docker-compose up --build
 ```
 
 Este processo cria a imagem da API e, em seguida, cria um serviço com 3 réplicas. As réplicas garantem maior resiliência, permitindo que o sistema continue funcionando mesmo que uma instância falhe. O uso da rede overlay assegura que todas as réplicas possam se comunicar de forma eficaz com os demais serviços.
@@ -110,11 +113,11 @@ O consumidor de mensagens está em execução como um serviço em segundo plano 
 
 ### 3. Executar o Publicador no Docker
 
-Na pasta `src/Desafio.ProtocoloPublisher`, execute os seguintes comandos:
+Na pasta `DesafioRabbitMQ\src`, execute os seguintes comandos:
 
 ```bash
-docker build -t matzet99/pub .
-docker run --rm --network desafiorabbitmq_app-network matzet99/pub
+docker build -t matzet99/protocolo-publisher -f Desafio.ProtocoloPublisher/Desafio.ProtocoloPublisher/Dockerfile .
+docker run --rm --network desafiorabbitmq_app-network  matzet99/protocolo-publisher
 ```
 
 O publicador é responsável por enviar mensagens para a fila `protocolos_pending_queue`, simulando a geração de novos protocolos. A execução deste componente permite testar a interação entre o produtor e o consumidor de mensagens, validando o fluxo completo de processamento.

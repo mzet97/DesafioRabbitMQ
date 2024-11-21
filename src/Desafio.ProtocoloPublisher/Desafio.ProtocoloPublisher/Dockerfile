@@ -7,14 +7,15 @@ WORKDIR /app
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Desafio.ProtocoloPublisher/Desafio.ProtocoloPublisher.csproj", "Desafio.ProtocoloPublisher/"]
-COPY ["Desafio.ProtocoloPublisher.Core/Desafio.ProtocoloPublisher.Core.csproj", "Desafio.ProtocoloPublisher.Core/"]
-COPY ["Desafio.ProtocoloPublisher.Infrastructure/Desafio.ProtocoloPublisher.Infrastructure.csproj", "Desafio.ProtocoloPublisher.Infrastructure/"]
+COPY ["Desafio.ProtocoloPublisher/Desafio.ProtocoloPublisher/Desafio.ProtocoloPublisher.csproj", "Desafio.ProtocoloPublisher/"]
+COPY ["Desafio.ProtocoloPublisher/Desafio.ProtocoloPublisher.Core/Desafio.ProtocoloPublisher.Core.csproj", "Desafio.ProtocoloPublisher.Core/"]
+COPY ["Desafio.ProtocoloPublisher/Desafio.ProtocoloPublisher.Infrastructure/Desafio.ProtocoloPublisher.Infrastructure.csproj", "Desafio.ProtocoloPublisher.Infrastructure/"]
 RUN dotnet restore "./Desafio.ProtocoloPublisher/Desafio.ProtocoloPublisher.csproj"
 COPY . .
-WORKDIR "/src/Desafio.ProtocoloPublisher"
+WORKDIR "/src/Desafio.ProtocoloPublisher/Desafio.ProtocoloPublisher"
 RUN dotnet build "./Desafio.ProtocoloPublisher.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
